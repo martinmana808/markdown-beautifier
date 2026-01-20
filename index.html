@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Markdown Beautifier</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Marked.js for Preview Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- CodeMirror 5 (The Editor Engine) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
+    <style>
+        :root {
+            --bg-page: #020617; /* Slate 950 */
+            --bg-card: #0f172a; /* Slate 900 */
+            --bg-input: #1e293b; /* Slate 800 */
+            --border: #334155;  /* Slate 700 */
+            --text-primary: #f1f5f9; /* Slate 100 */
+            --text-secondary: #94a3b8; /* Slate 400 */
+            --accent: #06b6d4; /* Cyan 500 */
+            
+            /* Alert Colors */
+            --note-bg: rgba(59, 130, 246, 0.1); --note-border: #3b82f6; --note-text: #60a5fa;
+            --tip-bg: rgba(34, 197, 94, 0.1); --tip-border: #22c55e; --tip-text: #4ade80;
+            --warn-bg: rgba(234, 179, 8, 0.1); --warn-border: #eab308; --warn-text: #facc15;
+            --imp-bg: rgba(168, 85, 247, 0.1); --imp-border: #a855f7; --imp-text: #c084fc;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            height: 60px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        button:hover { background: var(--border); }
+        button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+        button.primary:hover { filter: brightness(1.1); }
+
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Split View */
+        .editor-pane, .preview-pane {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-pane { border-right: 1px solid var(--border); position: relative; }
+
+        /* CodeMirror Overrides to match Theme */
+        .CodeMirror {
+            height: 100% !important;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background-color: #0d1117 !important; /* GitHub Dimmed match */
+            color: #c9d1d9 !important;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* PREVIEW STYLING */
+        .preview-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 3rem;
+            background: var(--bg-page);
+        }
+
+        .preview-content h1, .preview-content h2, .preview-content h3 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            line-height: 1.3;
+        }
+        .preview-content h1 { font-size: 2.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; margin-top: 0; }
+        .preview-content h2 { font-size: 1.75rem; }
+        .preview-content h3 { font-size: 1.25rem; }
+
+        .preview-content p { margin-bottom: 1.2em; }
+        
+        .preview-content a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed transparent; transition: all 0.2s; }
+        .preview-content a:hover { border-bottom-color: var(--accent); }
+
+        /* Code in Preview */
+        .preview-content pre {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            margin: 1.5em 0;
+        }
+        .preview-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.05);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--text-primary);
+        }
+        .preview-content pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Blockquotes / Alerts */
+        .preview-content blockquote {
+            border-left: 4px solid var(--border);
+            margin: 1.5em 0;
+            padding: 0.5em 0 0.5em 1.5em;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: var(--bg-card);
+        }
+
+        /* GitHub Alerts Styling */
+        .markdown-alert {
+            margin-bottom: 16px;
+            padding: 0.1rem 1rem;
+            border-left-width: .25rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .markdown-alert-title { display: none; }
+        
+        .markdown-alert-note { border-left-color: var(--note-border); background-color: var(--note-bg); color: var(--note-text); }
+        .markdown-alert-tip { border-left-color: var(--tip-border); background-color: var(--tip-bg); color: var(--tip-text); }
+        .markdown-alert-warning { border-left-color: var(--warn-border); background-color: var(--warn-bg); color: var(--warn-text); }
+        .markdown-alert-important { border-left-color: var(--imp-border); background-color: var(--imp-bg); color: var(--imp-text); }
+
+        /* Tables & Lists */
+        .preview-content table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.9em; }
+        .preview-content th, .preview-content td { text-align: left; padding: 0.75rem; border-bottom: 1px solid var(--border); }
+        .preview-content th { color: var(--text-primary); font-weight: 600; }
+        .preview-content ul, .preview-content ol { padding-left: 1.5rem; margin-bottom: 1.5em; }
+        .preview-content li { margin-bottom: 0.5em; }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-page); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i data-lucide="sparkles"></i>
+            MARKDOWN BEAUTIFIER
+        </div>
+        <div class="actions">
+            <button onclick="copyHTML()"><i data-lucide="code"></i> Copy HTML</button>
+            <button class="primary" onclick="window.print()"><i data-lucide="printer"></i> Print / PDF</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="editor-pane">
+            <div class="toolbar">Editor (GitHub Markdown)</div>
+            <!-- Textarea is replaced by CodeMirror -->
+            <textarea id="editor"></textarea>
+        </div>
+        <div class="preview-pane">
+            <div class="toolbar">Live Preview</div>
+            <div id="preview" class="preview-content"></div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        const preview = document.getElementById('preview');
+
+        // Default Content
+        const DEFAULT_TEXT = [
+            '# Welcome to the Beautifier 🎨',
+            '',
+            'This is a **live preview** editor using the "Antigravity" design system.',
+            '',
+            '## Features',
+            '- **High Fidelity Typography**: Inter & JetBrains Mono.',
+            '- **Dark Mode**: Optimized for long reading sessions.',
+            '- **GitHub Alerts**:',
+            '',
+            '> [!NOTE]',
+            '> Use these boxes for notes!',
+            '',
+            '> [!TIP]',
+            '> Pro Tip: You can print this page to save a PDF!',
+            '',
+            '> [!WARNING]',
+            '> Be careful with your power.',
+            '',
+            '## Code Example',
+            '```javascript',
+            'function hello() {',
+            '  console.log("Hello Universe!");',
+            '}',
+            '```'
+        ].join('\\n');
+
+        // Initialize CodeMirror (The Pro Editor)
+        const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+            mode: "markdown",
+            theme: "material-darker",
+            lineNumbers: true,
+            lineWrapping: true,
+            autoCloseBrackets: true,
+            scrollbarStyle: "native",
+            // We can add keymaps here if we want vim/emacs later
+        });
+
+        // Load Content
+        const saved = localStorage.getItem('md-content');
+        editor.setValue(saved || DEFAULT_TEXT);
+
+        // Configure Marked
+        marked.use({ gfm: true, breaks: true });
+
+        // Custom renderer for GitHub Alerts
+        const alertExtension = {
+            name: 'alert',
+            level: 'block',
+            start(src) { return src.match(/>\\s\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]/)?.index; },
+            tokenizer(src, tokens) {
+                const rule = /^>\\s\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]\\s*\\n>\\s?(.*)(?:\\n>\\s?(.*))*/;
+                const match = rule.exec(src);
+                if (match) {
+                    const type = match[1].toLowerCase();
+                    const text = match[0].replace(/^>\\s\\[!.*\\]\\n/, '').replace(/^>\\s?/gm, '');
+                    return { type: 'alert', raw: match[0], alertType: type, text: text.trim(), tokens: [] };
+                }
+            },
+            renderer(token) {
+                return `<div class="markdown-alert markdown-alert-${token.alertType}">
+                    <div>${marked.parse(token.text)}</div>
+                </div>`;
+            }
+        };
+        marked.use({ extensions: [alertExtension] });
+
+        // Update Logic
+        function updatePreview() {
+            const val = editor.getValue();
+            localStorage.setItem('md-content', val);
+            preview.innerHTML = marked.parse(val);
+        }
+
+        // Listen to changes
+        editor.on("change", function() {
+            updatePreview();
+        });
+        
+        // Initial render
+        updatePreview();
+
+        function copyHTML() {
+            const html = preview.innerHTML;
+            navigator.clipboard.writeText(html).then(() => alert('HTML copied to clipboard!'));
+        }
+    </script>
+</body>
+</html>
