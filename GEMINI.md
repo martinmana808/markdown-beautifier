@@ -10,6 +10,9 @@
 
 ## History
 
+### [2026-02-05] Indentation Guides | [log-20260205-indent-guides](./GEMINI--logs.md#log-20260205-indent-guides)
+-   Added vertical indentation lines to the editor.
+
 ### [2026-02-05] Font Update & DX Fix | [log-20260205-font-update](./GEMINI--logs.md#log-20260205-font-update)
 -   Switched editor font to Fira Code / Consolas.
 -   Added `package.json` for `npm run dev` support.

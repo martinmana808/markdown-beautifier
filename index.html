@@ -18,7 +18,7 @@
 
     <!-- CodeMirror 5 (The Editor Engine) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
@@ -26,6 +26,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/mode/overlay.min.js"></script>
 
     <style>
         :root {
@@ -38,6 +39,7 @@
             --text-violeta: #BB7CD7;
             --text-rojo: #D17277;
             --text-verde: #A7DF48;
+            --text-naranja: #DFC184;
             --text-gris: #5D636F;
             
             --text-secondary: #94a3b8; /* Slate 400 */
@@ -132,7 +134,7 @@
             font-size: 14px;
             line-height: 1.6;
             background-color: transparent !important; /* Let container bg show through */
-            color: #e2e8f0 !important; /* Slate 200 - Brighter text */
+            color: var(--text-primary) !important; /* Slate 200 - Brighter text */
         }
         
         /* Gutters / Line Numbers */
@@ -269,11 +271,29 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
         
+        .cm-variable-3 {
+        }
+        .cm-comment {
+            color: var(--text-verde);
+        }
+        .cm-comment {
+            color: var(--text-verde);
+            font-style: italic;
+        }
         .cm-header {
             color: var(--text-rojo);
         }
         .cm-em {
             color: var(--text-violeta);
+        }
+        .cm-quote {
+            color: var(--text-gris);
+        }
+        
+        /* INDENT GUIDES */
+        .cm-indent-guide {
+            display: inline-block;
+            box-shadow: 1px 0 0 0 var(--border) inset;
         }
     </style>
 </head>
@@ -343,8 +363,43 @@
             autoCloseBrackets: true,
             styleActiveLine: true,
             scrollbarStyle: "native",
+            indentUnit: 4,
             // We can add keymaps here if we want vim/emacs later
         });
+
+        // Define Indent Guide Overlay
+        CodeMirror.defineMode("indent-guides", function(config) {
+            var indentUnit = config.indentUnit || 4;
+            var indentRegex = new RegExp("^ {" + indentUnit + "}");
+            
+            return {
+                startState: function() {
+                    return { indented: true };
+                },
+                token: function(stream, state) {
+                    // Only process at start of line
+                    if (stream.sol()) state.indented = true;
+                    
+                    if (!state.indented) {
+                        stream.skipToEnd();
+                        return null;
+                    }
+
+                    // Attempt to match an indent unit
+                    if (stream.match(indentRegex)) {
+                        return "indent-guide";
+                    }
+                    
+                    // If we hit non-space, stop checking
+                    state.indented = false;
+                    stream.skipToEnd();
+                    return null;
+                }
+            };
+        });
+        
+        // Apply Overlay
+        editor.addOverlay("indent-guides");
 
         // Load Content
         const saved = localStorage.getItem('md-content');
