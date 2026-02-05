@@ -10,6 +10,9 @@
 
 ## History
 
+### [2026-02-05] Project Documentation | [log-20260205-readme](./GEMINI--logs.md#log-20260205-readme)
+-   Added comprehensive `README.md`.
+
 ### [2026-02-05] Indentation Guides | [log-20260205-indent-guides](./GEMINI--logs.md#log-20260205-indent-guides)
 -   Added vertical indentation lines to the editor.
 
