@@ -10,6 +10,10 @@
 
 ## History
 
+### [2026-02-05] Font Update & DX Fix | [log-20260205-font-update](./GEMINI--logs.md#log-20260205-font-update)
+-   Switched editor font to Fira Code / Consolas.
+-   Added `package.json` for `npm run dev` support.
+
 ### [2026-02-05] Reskin Left Panel Editor | [log-20260205-reskin-editor](./GEMINI--logs.md#log-20260205-reskin-editor)
 -   Refined Left Panel (Markdown Editor) with premium dark theme.
 -   Added active line highlighting and transparent backgrounds.

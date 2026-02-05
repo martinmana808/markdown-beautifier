@@ -41,3 +41,20 @@ render_diffs(file:///Users/martinmana/.gemini/antigravity/brain/0d9674bb-9067-4c
 
 ### Walkthrough
 render_diffs(file:///Users/martinmana/.gemini/antigravity/brain/0d9674bb-9067-4cb9-a970-4a29d442533b/walkthrough.md)
+
+<a name="log-20260205-font-update"></a>
+## [2026-02-05] Font Update & DX Fix
+
+**User Prompt:**
+`coule we change the font to be 'Fira Code', Consolas, 'Courier New', monospace` and `npm run dev` failure.
+
+**Technical Decision & Outcome:**
+-   Updated `index.html` to import `Fira Code` from Google Fonts.
+-   Changed CSS font-family stack to `'Fira Code', Consolas, 'Courier New', monospace`.
+-   Created `package.json` to enable `npm run dev` (via `npx serve`).
+-   Verified via browser screenshot.
+
+**Verbatim Artifacts:**
+
+### Walkthrough (Updated)
+render_diffs(file:///Users/martinmana/.gemini/antigravity/brain/0d9674bb-9067-4cb9-a970-4a29d442533b/walkthrough.md)

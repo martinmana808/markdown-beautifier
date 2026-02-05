@@ -1,0 +1,14 @@
+{
+  "name": "markdown-beautifier",
+  "version": "1.0.0",
+  "description": "Premium Markdown Editor by Antigravity",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "keywords": [],
+  "author": "Antigravity",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
