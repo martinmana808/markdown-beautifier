@@ -10,10 +10,6 @@
 
 ## History
 
-### [2026-02-05] Reskin Left Panel Editor | [log-20260205-reskin-editor](./GEMINI--logs.md#log-20260205-reskin-editor)
--   Refined Left Panel (Markdown Editor) with premium dark theme.
--   Added active line highlighting and transparent backgrounds.
-
 ### [2026-01-20] Initial Project Sync | [log-20260120-initial-sync](./GEMINI--logs.md#log-20260120-initial-sync)
 -   Project initialized and structured with GEMINI logging protocol.
 -   Git repository initialized and linked to GitHub.
