@@ -8,11 +8,11 @@ A premium, browser-based Markdown editor and previewer built with the "Antigravi
 
 - **Premium Aesthetics**: Deep slate / cyan theme inspired by modern developer tools.
 - **High-Fidelity Typography**: Uses **Fira Code**, **JetBrains Mono**, and **Inter**.
-- **Live Preview**: Instant rendering of Markdown to HTML.
-- **Developer Experience**:
-  - vertical indentation guides.
-  - Active line highlighting.
-  - Syntax highlighting for code blocks.
+- **Ghost Editor**: A custom-built, layered syntax highlighter with:
+  - **Hierarchical Hyphens**: 1, 2, or 3 hyphens color-coded with visual "single bullet" collapsing.
+  - **Yellow Highlighting**: Automatic yellow marking for `< CONTENT >` and `++` lines.
+  - **Visual Indentation**: Seamless vertical guides using `.tab` spans.
+- **View Modes**: Toggle between **RAW** (Highlighter), **LIVE** (Preview), and **HYBRID** (Split).
 - **GitHub Alerts**: Support for `[!NOTE]`, `[!TIP]`, `[!WARNING]`, and `[!IMPORTANT]`.
 - **Export**: Copy HTML or Print to PDF.
 
@@ -39,7 +39,7 @@ This project is a static single-page application (SPA), but for the best experie
 ## Tech Stack
 
 -   **Core**: HTML5, Vanilla CSS, JavaScript
--   **Editor**: [CodeMirror 5](https://codemirror.net/5/)
+-   **Editor**: Custom "Ghost Editor" (Layered Textarea + CSS Highlighter)
 -   **Parser**: [Marked.js](https://marked.js.org/)
 -   **Icons**: [Lucide](https://lucide.dev/)
 -   **Fonts**: Google Fonts (Inter, Fira Code, JetBrains Mono)

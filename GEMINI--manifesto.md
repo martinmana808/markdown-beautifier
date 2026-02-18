@@ -10,8 +10,10 @@ Markdown is the lingua franca of technical communication, yet raw Markdown is of
 A lightweight, client-side web application that provides:
 1.  **High-Fidelity Live Preview:** Using a curated design system (Inter/JetBrains Mono).
 2.  **GitHub-Style Alerts:** Supporting standard GH alert syntax for better information hierarchy.
-3.  **CodeMirror Integration:** A professional editing experience with syntax highlighting.
-4.  **Zero-Configuration Export:** One-click HTML copy and print-to-PDF optimization.
+3.  **Advanced Rendering Engine:** Integration with `highlight.js` and custom `marked.js` extensions for GFM alerts, copy buttons, and premium typography.
+4.  **Ghost Editor Architecture:** A high-performance, layered editing experience with custom regex syntax highlighting, vertical indent guides, and zero-latency feedback.
+5.  **Multi-View Workspace:** Integrated RAW, LIVE, and HYBRID modes with state persistence.
+6.  **Zero-Configuration Export:** One-click HTML copy and print-to-PDF optimization.
 
 ## Future Plans
 - [ ] Support for Mermaid diagrams.

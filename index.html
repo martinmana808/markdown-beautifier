@@ -12,44 +12,43 @@
     
     <!-- Marked.js for Preview Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Highlight.js for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- CodeMirror 5 (The Editor Engine) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/mode/overlay.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         :root {
-            --bg-page: #292C33; /* Slate 950 */
-            --bg-card: #2e3138ff; /* Slate 900 */
-            --bg-input: #1e293b; /* Slate 800 */
-            --border: #334155;  /* Slate 700 */
-            --text-primary: #ACB2BE; /* Slate 100 */
+            --bg-page: #292C33; /* Slightly darker, more blue-tinted slate */
+            --bg-card: #292C33; /* Adjust card to match new darker bg */
+            --bg-input: #181A20; 
+            --border: #303540;  
+            --text-primary: #E2E4E9; /* Brighter white for high contrast */
             
             --text-violeta: #BB7CD7;
             --text-rojo: #D17277;
             --text-verde: #A7DF48;
             --text-naranja: #DFC184;
             --text-gris: #5D636F;
+            --text-cyan: #70E1E8;
             
             --text-secondary: #94a3b8; /* Slate 400 */
             --accent: #06b6d4; /* Cyan 500 */
             
             /* Alert Colors */
-            --note-bg: rgba(59, 130, 246, 0.1); --note-border: #3b82f6; --note-text: #60a5fa;
-            --tip-bg: rgba(34, 197, 94, 0.1); --tip-border: #22c55e; --tip-text: #4ade80;
-            --warn-bg: rgba(234, 179, 8, 0.1); --warn-border: #eab308; --warn-text: #facc15;
-            --imp-bg: rgba(168, 85, 247, 0.1); --imp-border: #a855f7; --imp-text: #c084fc;
+            --note-bg: rgba(59, 130, 246, 0.05); --note-border: #3b82f6; --note-text: #60a5fa;
+            --tip-bg: rgba(34, 197, 94, 0.05); --tip-border: #22c55e; --tip-text: #4ade80;
+            --warn-bg: rgba(234, 179, 8, 0.05); --warn-border: #eab308; --warn-text: #facc15;
+            --imp-bg: rgba(168, 85, 247, 0.05); --imp-border: #a855f7; --imp-text: #c084fc;
+            --caution-bg: rgba(239, 68, 68, 0.05); --caution-border: #ef4444; --caution-text: #f87171;
         }
 
         * { box-sizing: border-box; }
@@ -96,21 +95,89 @@
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 0.85rem;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
-        button:hover { background: var(--border); }
+
+        .view-switcher {
+            gap: 0.5rem;
+            background: var(--bg-input);
+            padding: 0.25rem;
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .view-switcher button {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-switcher button:hover {
+            color: var(--text-primary);
+        }
+
+        .view-switcher button.active {
+            background: var(--accent);
+            color: white;
+        }
         button.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
         button.primary:hover { filter: brightness(1.1); }
+
+        /* View Switcher */
+        .view-switcher {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-input);
+            padding: 0.25rem;
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .view-switcher button {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .view-switcher button:hover {
+            color: var(--text-primary);
+        }
+
+        .view-switcher button.active {
+            background: var(--accent);
+            color: #000;
+        }
 
         main {
             flex: 1;
             display: flex;
             overflow: hidden;
+            gap: 1.5rem;
+            padding: 0 1.5rem 1.5rem;
         }
+
+        /* View Modes */
+        .view-raw .preview-pane { display: none; }
+        .view-raw .editor-pane { flex: 1; border-right: none; }
+        
+        .view-live .editor-pane { display: none; }
+        .view-live .preview-pane { flex: 1; }
+        
+        .view-hybrid .editor-pane { flex: 1; }
+        .view-hybrid .preview-pane { flex: 1; }
 
         /* Split View */
         .editor-pane, .preview-pane {
@@ -124,48 +191,75 @@
         .editor-pane { 
             border-right: 1px solid var(--border); 
             position: relative; 
-            background-color: var(--bg-page); /* Match page bg for better blend */
+            background-color: var(--bg-page);
         }
 
-        /* CodeMirror Overrides to match Antigravity Theme */
-        .CodeMirror {
-            height: 100% !important;
+        .editor-wrapper {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #editor, #highlighting {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             font-family: 'Fira Code', Consolas, 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
-            background-color: transparent !important; /* Let container bg show through */
-            color: var(--text-primary) !important; /* Slate 200 - Brighter text */
-        }
-        
-        /* Gutters / Line Numbers */
-        .CodeMirror-gutters {
-            background-color: var(--bg-page) !important;
-            border-right: 1px solid var(--border) !important;
-        }
-        .CodeMirror-linenumber {
-            color: var(--text-secondary) !important;
-            opacity: 0.5;
-        }
-        
-        /* Cursor & Selection */
-        .CodeMirror-cursor {
-            border-left: 2px solid var(--accent) !important;
-        }
-        .CodeMirror-selected {
-            background: rgba(6, 182, 212, 0.2) !important; /* Cyan low opacity */
-        }
-        .CodeMirror-focused .CodeMirror-selected {
-            background: rgba(6, 182, 212, 0.3) !important;
-        }
-        .CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
-            background: rgba(6, 182, 212, 0.3) !important;
+            padding: 2rem;
+            margin: 0;
+            border: none;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+            tab-size: 4;
+            -moz-tab-size: 4;
         }
 
-        /* Active Line (requires addon, trying simulated effect via CSS if addon absent, 
-           but CSS alone can't track line perfectly without classes. 
-           Assumes 'styleActiveLine' might be added later or we just accept good defaults) */ 
-        .CodeMirror-activeline-background {
-            background: rgba(255, 255, 255, 0.03) !important;
+        #editor {
+            background: transparent;
+            color: transparent;
+            resize: none;
+            outline: none;
+            caret-color: var(--accent);
+            z-index: 2;
+            overflow-x: hidden;
+            border-radius: 0;
+        }
+
+        #highlighting {
+            color: var(--text-primary);
+            pointer-events: none;
+            z-index: 1;
+            background: transparent;
+            overflow-x: hidden;
+        }
+
+        /* Custom Highlighting Classes */
+        .hl-purple { color: #BB7CD7; }
+        .hl-green-italic { color: #A7DF49; font-style: italic; }
+        .hl-red { color: #CF7276; }
+        .hl-yellow { color: #ffc654ff; }
+        .hl-white { color: #c2c2c2ff; }
+        .hl-white-dark { color: #999; }
+        .hl-white-darker { color: #777; }
+        .hl-blue { color: #74ADEA; }
+        .hl-grey-italic { color: #5E636F; font-style: italic; }
+
+        .tab {
+            border-left: 1px solid #666;
+            display: inline-block;
+            white-space: pre;
+        }
+
+        .hl-hide {
+            opacity: 0;
+            font-size: 0;
+            display: inline-block;
         }
         
         /* Toolbar */
@@ -192,33 +286,76 @@
             background: var(--bg-page);
         }
 
-        .preview-content h1, .preview-content h2, .preview-content h3 {
+        .preview-content h1, .preview-content h2, .preview-content h3, .preview-content h4, .preview-content h5, .preview-content h6 {
             color: var(--text-primary);
-            font-weight: 600;
-            margin-top: 1.5em;
-            margin-bottom: 0.8em;
-            line-height: 1.3;
+            font-weight: 700;
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
         }
-        .preview-content h1 { font-size: 2.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; margin-top: 0; }
-        .preview-content h2 { font-size: 1.75rem; }
-        .preview-content h3 { font-size: 1.25rem; }
+        .preview-content h1 { font-size: 2.2rem; color: var(--text-rojo); border-bottom: 2px solid var(--border); padding-bottom: 0.6rem; margin-top: 0; }
+        .preview-content h2 { font-size: 1.8rem; color: var(--text-naranja); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+        .preview-content h3 { font-size: 1.5rem; color: var(--text-violeta); }
+        .preview-content h4 { font-size: 1.3rem; color: var(--text-verde); }
+        .preview-content h5 { font-size: 1.1rem; color: var(--text-cyan); }
 
-        .preview-content p { margin-bottom: 1.2em; }
+        .preview-content p { margin-bottom: 1.5rem; line-height: 1.75; font-size: 1.05rem; color: #B0B5C0; }
         
-        .preview-content a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed transparent; transition: all 0.2s; }
-        .preview-content a:hover { border-bottom-color: var(--accent); }
+        .preview-content strong { color: var(--text-primary); font-weight: 600; }
+        .preview-content a:hover { border-bottom-color: var(--accent); background: rgba(6, 182, 212, 0.05); }
 
         /* Code in Preview */
-        .preview-content pre {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-            overflow-x: auto;
-            font-family: 'Fira Code', Consolas, 'Courier New', monospace;
-            font-size: 0.9em;
+        .preview-content .code-block-wrapper {
+            position: relative;
             margin: 1.5em 0;
+            background: #1a1b26; /* Tokyo Night Darker background */
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
         }
+
+        .preview-content .code-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .preview-content .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .preview-content .copy-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .preview-content pre {
+            background: transparent !important;
+            border: none !important;
+            padding: 1.25rem !important;
+            margin: 0 !important;
+            overflow-x: auto;
+        }
+        
         .preview-content code {
             font-family: 'Fira Code', Consolas, 'Courier New', monospace;
             background: rgba(255,255,255,0.05);
@@ -227,6 +364,7 @@
             font-size: 0.85em;
             color: var(--text-primary);
         }
+        
         .preview-content pre code {
             background: transparent;
             padding: 0;
@@ -235,28 +373,63 @@
 
         /* Blockquotes / Alerts */
         .preview-content blockquote {
-            border-left: 4px solid var(--border);
-            margin: 1.5em 0;
-            padding: 0.5em 0 0.5em 1.5em;
-            color: var(--text-secondary);
+            border-left: 3px solid var(--border);
+            margin: 2rem 0;
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            color: #9BA1B0;
             font-style: italic;
-            background: var(--bg-card);
+            line-height: 1.6;
+        }
+
+        .preview-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 3rem 0;
         }
 
         /* GitHub Alerts Styling */
         .markdown-alert {
-            margin-bottom: 16px;
-            padding: 0.1rem 1rem;
+            margin-bottom: 24px;
+            padding: 1.25rem;
             border-left-width: .25rem;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             font-size: 0.95rem;
+            position: relative;
+            background: var(--bg-card);
         }
-        .markdown-alert-title { display: none; }
         
-        .markdown-alert-note { border-left-color: var(--note-border); background-color: var(--note-bg); color: var(--note-text); }
-        .markdown-alert-tip { border-left-color: var(--tip-border); background-color: var(--tip-bg); color: var(--tip-text); }
-        .markdown-alert-warning { border-left-color: var(--warn-border); background-color: var(--warn-bg); color: var(--warn-text); }
-        .markdown-alert-important { border-left-color: var(--imp-border); background-color: var(--imp-bg); color: var(--imp-text); }
+        .markdown-alert-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        .markdown-alert-header i {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .markdown-alert-note { border-left-color: var(--note-border); color: var(--text-primary); }
+        .markdown-alert-note .markdown-alert-header { color: var(--note-text); }
+        
+        .markdown-alert-tip { border-left-color: var(--tip-border); color: var(--text-primary); }
+        .markdown-alert-tip .markdown-alert-header { color: var(--tip-text); }
+        
+        .markdown-alert-warning { border-left-color: var(--warn-border); color: var(--text-primary); }
+        .markdown-alert-warning .markdown-alert-header { color: var(--warn-text); }
+        
+        .markdown-alert-important { border-left-color: var(--imp-border); color: var(--text-primary); }
+        .markdown-alert-important .markdown-alert-header { color: var(--imp-text); }
+
+        .markdown-alert-caution { border-left-color: var(--caution-border); color: var(--text-primary); }
+        .markdown-alert-caution .markdown-alert-header { color: var(--caution-text); }
+
+        .markdown-alert p:last-child { margin-bottom: 0; }
 
         /* Tables & Lists */
         .preview-content table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.9em; }
@@ -289,12 +462,6 @@
         .cm-quote {
             color: var(--text-gris);
         }
-        
-        /* INDENT GUIDES */
-        .cm-indent-guide {
-            display: inline-block;
-            box-shadow: 1px 0 0 0 var(--border) inset;
-        }
     </style>
 </head>
 <body>
@@ -305,6 +472,11 @@
             MARKDOWN BEAUTIFIER
         </div>
         <div class="actions">
+            <div class="view-switcher">
+                <button onclick="setViewMode('raw')" id="btn-raw">RAW</button>
+                <button onclick="setViewMode('live')" id="btn-live">LIVE</button>
+                <button onclick="setViewMode('hybrid')" id="btn-hybrid">HYBRID</button>
+            </div>
             <button onclick="copyHTML()"><i data-lucide="code"></i> Copy HTML</button>
             <button class="primary" onclick="window.print()"><i data-lucide="printer"></i> Print / PDF</button>
         </div>
@@ -312,9 +484,11 @@
 
     <main>
         <div class="editor-pane">
-            <div class="toolbar">Editor (GitHub Markdown)</div>
-            <!-- Textarea is replaced by CodeMirror -->
-            <textarea id="editor"></textarea>
+            <div class="toolbar">Editor (Custom Syntax)</div>
+            <div class="editor-wrapper">
+                <div id="highlighting" aria-hidden="true"></div>
+                <textarea id="editor" spellcheck="false" autocomplete="off"></textarea>
+            </div>
         </div>
         <div class="preview-pane">
             <div class="toolbar">Live Preview</div>
@@ -328,120 +502,289 @@
 
         // Default Content
         const DEFAULT_TEXT = [
-            '# Welcome to the Beautifier 🎨',
+            '# Markdown Beautifier 🎨',
             '',
-            'This is a **live preview** editor using the "Antigravity" design system.',
+            'This is a **premium** markdown editor and previewer, designed to mirror the "Antigravity" aesthetic.',
             '',
-            '## Features',
-            '- **High Fidelity Typography**: Inter & Fira Code.',
-            '- **Dark Mode**: Optimized for long reading sessions.',
-            '- **GitHub Alerts**:',
+            '## 🚀 Core Features',
+            '- **High-Fidelity Typography**: Inter for reading, Fira Code for logic.',
+            '- **Gfm Alerts**: Visual callouts for notes, tips, and warnings.',
+            '- **Syntax Highlighting**: Beautiful code blocks with copy support.',
+            '- **Interactive UI**: Real-time rendering and state persistence.',
+            '',
+            '### 💡 GitHub Alerts',
             '',
             '> [!NOTE]',
-            '> Use these boxes for notes!',
+            '> These alerts use Lucide icons and look exactly like Antigravity.',
             '',
             '> [!TIP]',
-            '> Pro Tip: You can print this page to save a PDF!',
+            '> Pro Tip: Press `Cmd/Ctrl + P` to save as PDF!',
             '',
-            '> [!WARNING]',
-            '> Be careful with your power.',
+            '> [!CAUTION]',
+            '> This tool is highly addictive for document lovers.',
             '',
-            '## Code Example',
+            '### 📊 Data Visualization',
+            '',
+            '| Feature | Status | Priority |',
+            '| :--- | :---: | :---: |',
+            '| Dark Mode | ✅ | High |',
+            '| Code Highlighting | ✅ | High |',
+            '| Interactive Icons | ✅ | Med |',
+            '| Export to PDF | ✅ | Med |',
+            '',
+            '### 💻 Code Example',
+            '',
             '```javascript',
-            'function hello() {',
-            '  console.log("Hello Universe!");',
-            '}',
+            '// Copy and paste this to see the highlighting in action!',
+            'const beautifier = {',
+            '    engine: "Antigravity",',
+            '    speed: "Infinite",',
+            '    render: (content) => {',
+            '        return "✨ " + content + " ✨";',
+            '    }',
+            '};',
             '```'
         ].join('\\n');
 
-        // Initialize CodeMirror (The Pro Editor)
-        const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
-            mode: "markdown",
-            theme: "material-darker",
-            lineNumbers: true,
-            lineWrapping: true,
-            autoCloseBrackets: true,
-            styleActiveLine: true,
-            scrollbarStyle: "native",
-            indentUnit: 4,
-            // We can add keymaps here if we want vim/emacs later
-        });
-
-        // Define Indent Guide Overlay
-        CodeMirror.defineMode("indent-guides", function(config) {
-            var indentUnit = config.indentUnit || 4;
-            var indentRegex = new RegExp("^ {" + indentUnit + "}");
-            
-            return {
-                startState: function() {
-                    return { indented: true };
-                },
-                token: function(stream, state) {
-                    // Only process at start of line
-                    if (stream.sol()) state.indented = true;
-                    
-                    if (!state.indented) {
-                        stream.skipToEnd();
-                        return null;
-                    }
-
-                    // Attempt to match an indent unit
-                    if (stream.match(indentRegex)) {
-                        return "indent-guide";
-                    }
-                    
-                    // If we hit non-space, stop checking
-                    state.indented = false;
-                    stream.skipToEnd();
-                    return null;
-                }
-            };
-        });
-        
-        // Apply Overlay
-        editor.addOverlay("indent-guides");
+        const textarea = document.getElementById("editor");
+        const highlighting = document.getElementById("highlighting");
 
         // Load Content
         const saved = localStorage.getItem('md-content');
-        editor.setValue(saved || DEFAULT_TEXT);
+        textarea.value = saved || DEFAULT_TEXT;
+
+        // Custom Highlighting Logic
+        function applyHighlighting(text) {
+            // Escape HTML to prevent XSS and rendering issues
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // Define Rules
+            const rules = [
+                // 1. Everything between <!-- CONTENT --> -> italic + #A7DF49 (multiline)
+                { regex: /&lt;!--(?:.|\n)*?--&gt;/g, class: "hl-green-italic" },
+                // 2. Everything between * CONTENT * -> #BB7CD7 (multiline)
+                { regex: /\*(?:.|\n)*?\*/g, class: "hl-purple" },
+                // 3. Tiered Hyphens (whole line coloring)
+                // Level 3: --- (exactly 3)
+                { 
+                    regex: /^(.*?[\s\(\[\{]|)(---(?!-).*$)/gm, 
+                    class: "hl-white-darker", 
+                    capture: 2,
+                    transform: (c) => `-<span class="hl-hide">--</span>${c.substring(3)}`
+                },
+                // 4. Everything including ++ -> #DFC184 (yellow)
+                { regex: /^.*?\+\+.*$/gm, class: "hl-yellow" },
+                // 5. Everything between < > -> #DFC184 (yellow)
+                { regex: /&lt;.*?&gt;/g, class: "hl-yellow" },
+                // 6. Level 2 Hyphens: -- (exactly 2)
+                { 
+                    regex: /^(.*?[\s\(\[\{]|)(--(?!-).*$)/gm, 
+                    class: "hl-white-dark", 
+                    capture: 2,
+                    transform: (c) => `-<span class="hl-hide">-</span>${c.substring(2)}`
+                },
+                // 7. Level 1 Hyphens: - (exactly 1)
+                { regex: /^(.*?[\s\(\[\{]|)(-(?!(?:--|&gt;)).*$)/gm, class: "hl-white", capture: 2 },
+                // 8. Everything between [ CONTENT ] -> #74ADEA
+                { regex: /\[.*?\]/g, class: "hl-blue" },
+                // 9. Everything after # in the same line -> #CF7276
+                { regex: /#.*$/gm, class: "hl-red" },
+                // 10. Everything after == -> #CF7276 (same-line)
+                { regex: /==.*$/gm, class: "hl-red" },
+                // 11. Every line that starts with a > -> italic + #5E636F
+                { regex: /^&gt;.*$/gm, class: "hl-grey-italic" },
+                // 12. Visual Tabs (Double Spaces) - Must be last to catch prefixes
+                { regex: /  /g, class: "tab" }
+            ];
+
+            // To prevent rules from interfering with already applied spans,
+            // we use a placeholder approach for each rule.
+            let placeholders = [];
+            let i = 0;
+
+            rules.forEach(rule => {
+                html = html.replace(rule.regex, (match, p1, p2) => {
+                    let content = rule.capture === 2 ? p2 : match;
+                    const prefix = rule.capture === 2 ? p1 : "";
+                    
+                    if (rule.transform) {
+                        content = rule.transform(content);
+                    }
+                    
+                    const placeholder = `__HL_${i}__`;
+                    placeholders.push({
+                        id: placeholder,
+                        content: `<span class="${rule.class}">${content}</span>`
+                    });
+                    i++;
+                    return prefix + placeholder;
+                });
+            });
+
+            // Put back the highlighted content
+            placeholders.reverse().forEach(p => {
+                html = html.replace(p.id, p.content);
+            });
+
+            // Add a trailing newline to handle scrolling correctly
+            return html + (text.endsWith('\n') ? ' ' : '');
+        }
 
         // Configure Marked
-        marked.use({ gfm: true, breaks: true });
+        marked.use({ 
+            gfm: true, 
+            breaks: true,
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            }
+        });
 
         // Custom renderer for GitHub Alerts
+        const alertConfig = {
+            note: { icon: 'info', color: 'var(--note-text)' },
+            tip: { icon: 'lightbulb', color: 'var(--tip-text)' },
+            important: { icon: 'message-circle-more', color: 'var(--imp-text)' },
+            warning: { icon: 'triangle-alert', color: 'var(--warn-text)' },
+            caution: { icon: 'octagon-alert', color: 'var(--caution-text)' }
+        };
+
         const alertExtension = {
             name: 'alert',
             level: 'block',
-            start(src) { return src.match(/>\\s\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]/)?.index; },
+            start(src) { return src.match(/>\s\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/)?.index; },
             tokenizer(src, tokens) {
-                const rule = /^>\\s\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]\\s*\\n>\\s?(.*)(?:\\n>\\s?(.*))*/;
+                const rule = /^>\s\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*\n((?:>\s?.*\n?)*)/;
                 const match = rule.exec(src);
                 if (match) {
                     const type = match[1].toLowerCase();
-                    const text = match[0].replace(/^>\\s\\[!.*\\]\\n/, '').replace(/^>\\s?/gm, '');
-                    return { type: 'alert', raw: match[0], alertType: type, text: text.trim(), tokens: [] };
+                    const text = match[2].replace(/^>\s?/gm, '');
+                    return {
+                        type: 'alert',
+                        raw: match[0],
+                        alertType: type,
+                        text: text.trim(),
+                        tokens: []
+                    };
                 }
             },
             renderer(token) {
+                const config = alertConfig[token.alertType];
                 return `<div class="markdown-alert markdown-alert-${token.alertType}">
-                    <div>${marked.parse(token.text)}</div>
+                    <div class="markdown-alert-header">
+                        <i data-lucide="${config.icon}"></i>
+                        ${token.alertType}
+                    </div>
+                    <div class="markdown-alert-content">${marked.parse(token.text)}</div>
                 </div>`;
             }
         };
-        marked.use({ extensions: [alertExtension] });
+
+        // Custom renderer for Code Blocks to add Copy Button and Language Header
+        const renderer = new marked.Renderer();
+        const originalCode = renderer.code.bind(renderer);
+        renderer.code = function(code, infostring, escaped) {
+            const lang = (infostring || '').match(/\S*/)[0];
+            const highlighted = hljs.highlightAuto(code).value;
+            
+            return `
+                <div class="code-block-wrapper">
+                    <div class="code-block-header">
+                        <span>${lang || 'text'}</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i data-lucide="copy" style="width:12px;height:12px;"></i>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code class="hljs ${lang}">${highlighted}</code></pre>
+                </div>
+            `;
+        };
+
+        marked.use({ extensions: [alertExtension], renderer });
 
         // Update Logic
-        function updatePreview() {
-            const val = editor.getValue();
+        async function updatePreview() {
+            const val = textarea.value;
             localStorage.setItem('md-content', val);
+            
+            // Sync Highlighting
+            highlighting.innerHTML = applyHighlighting(val);
+            
+            // Sync Preview
             preview.innerHTML = marked.parse(val);
+            // Re-initialize icons in the preview
+            lucide.createIcons();
         }
 
-        // Listen to changes
-        editor.on("change", function() {
-            updatePreview();
+        // Sync Scrolling
+        textarea.addEventListener('scroll', () => {
+            highlighting.scrollTop = textarea.scrollTop;
+            highlighting.scrollLeft = textarea.scrollLeft;
         });
+
+        // Listen to changes
+        textarea.addEventListener('input', updatePreview);
+
+        // Handle Tab key in textarea
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+
+                // set textarea value to: text before caret + tab + text after caret
+                this.value = this.value.substring(0, start) +
+                    "    " + this.value.substring(end);
+
+                // put caret at right position again
+                this.selectionStart = this.selectionEnd = start + 4;
+                updatePreview();
+            }
+        });
+
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;"></i> Copied!';
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
         
+        // View Modes Logic
+        function setViewMode(mode) {
+            const main = document.querySelector('main');
+            main.classList.remove('view-raw', 'view-live', 'view-hybrid');
+            main.classList.add(`view-${mode}`);
+            
+            // Update button states
+            document.querySelectorAll('.view-switcher button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`btn-${mode}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            // Save preference
+            localStorage.setItem('viewMode', mode);
+            
+            // Update preview if switching to interactive
+            if (mode !== 'raw') {
+                updatePreview();
+            }
+        }
+
+        // Initialize view mode
+        const savedMode = localStorage.getItem('viewMode') || 'raw';
+        setViewMode(savedMode);
+
         // Initial render
         updatePreview();
 
